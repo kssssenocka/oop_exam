@@ -1,0 +1,214 @@
+#include <iostream>
+#include <list>
+using namespace std;
+
+class Fraction {
+private:
+	int num, den;
+public:
+	Fraction()
+	{
+		num = 0;
+		den = 1;
+	}
+
+	Fraction(int n, int d) : num(n), den(d) {}
+	int Num() const { return num; }
+	int Den() const { return den; }
+
+	const bool operator==(const Fraction& a)
+	{
+		return (num * a.den == a.num * den);
+	}
+
+	const bool operator<(const Fraction& a)
+	{
+		return (num * a.den < a.num* den);
+	}
+
+	virtual void print() {
+		cout << num << '/' << den << '\t';
+	}
+
+};
+
+class Airlines
+{
+public:
+	string name, i_code, country, site_add;
+	int num_lines, rating;
+
+	Airlines()
+	{
+		name = "NotStated", i_code = "NotStated";
+		country = "NotStated", site_add = "NotStated";
+		num_lines = 0, rating = 0;
+	}
+
+	Airlines(string n, string i, string c, string s, int num, int r)
+	{
+		name = n, i_code = i;
+		country = c, site_add = s;
+		num_lines = num, rating = r;
+	}
+
+	Airlines(const Airlines& A)
+	{
+		name = A.name, i_code = A.i_code;
+		country = A.country, site_add = A.site_add;
+		num_lines = A.num_lines, rating = A.rating;
+	}
+
+	bool operator<(Airlines& A)
+	{
+		if (rating != A.rating)
+			return (rating > A.rating);
+
+		if (num_lines != A.num_lines)
+			return (num_lines > A.num_lines);
+
+		return (name < A.name);
+	}
+
+	bool operator==(Airlines& A)
+	{
+		if (name == A.name, i_code == A.i_code,
+			country == A.country, site_add == A.site_add,
+			num_lines == A.num_lines, rating == A.rating)
+			return true;
+		return false;
+	}
+
+	void print()
+	{
+		cout << name << '\t' << i_code << '\t' << country << '\t' << site_add << '\t' << num_lines << '\t' << rating << '\n';
+
+	}
+
+};
+
+template<class T>
+void push(list<T>& l1, T a)
+{
+	typename list<T>::iterator it = l1.begin();
+	while (it != l1.end() && *it < a)
+	{
+		++it;
+	}
+	l1.insert(it, a);
+}
+
+template<class T>
+T pop1(list<T>& l1, T a)
+{
+
+	typename list<T>::iterator it = l1.begin();
+	while (it != l1.end())
+	{
+		if (*it == a)
+		{
+			T val = *it;
+			it = l1.erase(it);
+			return val;
+		}
+		++it;
+	}
+	return T();
+}
+
+bool predict(Fraction a)
+{
+	int num = a.Num();
+	int den = a.Den();
+	return (num < den);
+}
+
+template<class T>
+void print(list<T> l1)
+{
+	cout << '\n' << "<__________________| N E W    L I S T |__________________>" << '\n';
+	typename list<T>::iterator it = l1.begin();
+
+	while (it != l1.end())
+	{
+		T a = *it;
+		a.print();
+
+		it++;
+	}
+	cout << '\n';
+}
+
+template<class T>
+T pop2(list<T>& l1)
+{
+	typename list<T>::iterator it = l1.begin();
+	T a = *it;
+	it = l1.erase(it);
+	return a;
+}
+
+list<Fraction> filter(list<Fraction>& l1)
+{
+	list<Fraction> result;
+	typename list<Fraction>::iterator it = l1.begin();
+	Fraction a;
+
+	while (it != l1.end())
+	{
+		a = *it;
+		if (predict(a))
+			push(result, a);
+		it++;
+	}
+	return result;
+}
+
+int main() {
+
+	list<Fraction> l1;
+	push(l1, Fraction(1, 2));
+	push(l1, Fraction(1, 3));
+	push(l1, Fraction(5, 2));
+	push(l1, Fraction(1, 5));
+	push(l1, Fraction(4, 3));
+	push(l1, Fraction(3, 5));
+	push(l1, Fraction(1, 10));
+	push(l1, Fraction(7, 4));
+	print(l1); //  изначальный список
+
+	cout << '\n' << "_____new pop1_____" << '\n';
+	pop1(l1, Fraction(1, 2)).print();
+	cout << '\n' << "_____new pop1_____" << '\n';
+	pop1(l1, Fraction(123, 2)).print(); //  ничего не убирается
+	print(l1); // после удаления элементов
+
+	list<Fraction> r = filter(l1);
+	print(r);
+
+
+	list<Airlines> air;
+
+	Airlines a1("RusAr", "10001", "Russia", "russia.meow", 120, 10);
+	Airlines a2("Delta", "10002", "USA", "delta.meow", 355, 2);
+	Airlines a3("IbeAr", "10003", "Spain", "iberia.meow", 118, 5);
+	Airlines a4("KorAr", "10004", "RpKorea", "koreaair.meow", 118, 5);
+	Airlines a5("SASAi", "10005", "Sweden", "sas.meow", 11, -3);
+	Airlines a6("Ryanr", "10006", "Ireland", "ryanair.meow", 122, -4);
+
+	push(air, a1);
+	push(air, a2);
+	push(air, a3);
+	push(air, a4);
+	push(air, a5);
+	push(air, a6);
+	print(air);
+
+	cout << '\n' << "_____new pop1_____" << '\n';
+	pop1(air, a3).print();
+
+	cout << '\n' << "_____new pop2_____" << '\n';
+	pop2(air).print();
+	print(air);
+
+}
